@@ -1,0 +1,200 @@
+---
+title: "Notes - Improving Query Performance in SQL Server"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+### Chapter 1 
+
+Consistent formatting
+
+\begin{itemize}
+\item Be consistent
+\item Use UPPER CASE for all SQL syntax
+\item Create a new for each major processing syntax: SELECT, FROM, WHERE, etc.
+\end{itemize}
+
+Indent code: sub-queries, on statements, AND/OR conditions
+
+Complete the query with a semi-colon (;)
+
+Alias where required, using AS
+
+commenting blocks, /* */, -- 
+
+
+#### Aliasing
+Used in queries to identify tables, columns, subqueries; temporary, only applied when the query is run; make sthe query easier to read, may be required. 
+
+why: avoid repetitive use of long table or column names, easily identify joined tables and share the same name
+
+make sure the alias consistent and easy to read
+
+#### Query order
+the processing order of the main SQL syntax is different from the written order in the query.
+
+Syntax order: SELECT, FROM, WHERE, ORDER BY;
+Processing order: FROM, WHERE, SELECT, ORDER BY;
+
+Processing errors
+
+Logical processing order, FROM, ON, JOIN, WHERE, GROUP BY, HAVING, SELECT, DISTINCT, ORDER BY, TOP
+
+
+### Chapter 2 - Filtering and data interrogation
+
+#### Filtering with where
+Note where is queried before select
+
+applying functions to columns in the WHERE filter condition could increase query time, should try to make your query simpler, for example, like 'Georgia'
+
+#### Filtering with HAVING
+FROM, WHERE, HAVING, SELECT
+
+Don't use having to filter individual or ungrouped rows; having, for a numeric filter on grouped rows 
+
+GROUP BY, HAVING SUM() 
+
+Do not use HAVING to filter individual or ungrouped rows,
+
+#### Interrogation after select
+Processing order after SELECT
+
+
+SELECT TOP 5 PlayerName,
+       Team, TotalPoints
+FROM ...
+
+TOP 1 PERCENT
+
+The other row limiters: TOP + ORDER BY (MSFT SQL Server), ROWNUM + ORDER BY (Oracal), LIMIT (ORDER BY PostgreSQL)
+
+use ORDER BY with caution, use ORDER BY in a query: to interrogate the data, when there is a good reason for the final returned results to be sorted. 
+
+
+#### Managing duplications
+
+Removing dupliates with DISTINCT, we can also use GROUP BY instead.
+
+Removing duplicates with UNION
+
+If want to keep them all, use UNION ALL. Use with caution, calls an internal sorting under the hood.
+
+
+### Chapter 3 - Sub-queries
+
+Sub-query with FROM. 
+Sub-query with WHERE. 
+Sub-query with SELECT. 
+
+Types of sub-query. Correlated sub-query. Uncorrelated sub-query can be run in parallel. Correlated sub-query references the outer query. 
+
+#### Presence and absence
+
+Presence:
+
+SELECT CustomerID
+FROM Customers
+
+INTERSECT
+
+SELECT CustomerID
+FROM Orders;
+
+
+Absence:
+EXCEPT
+
+
+
+#### Alternative methods 1
+
+EXISTS (SELECT 1 ...)
+
+IN
+
+EXISTS VS IN, Exists will stop searching the sub-query when the condition is TRUE, IN collects all the results from a subquery before passing to the outer query.
+
+NOT Exists, NOT IN
+
+The way NOT IN handles NULL values in the sub-query
+
+
+#### Alternative methods 2
+INNER JOIN, LEFT OUTER JOIN, RIGHT OUTER JOIN.
+
+### Chapter 4 - Query performance tuning
+Statistics TIME in SSMS, CPU time, elapsed time. 
+
+CPU time: time taken by server processesors to process the query
+elapsed time: total duration of the query.
+
+SET STATISTICS TIME ON
+
+Comparing queries.
+
+Elapsed time, may be variable when analying query time statistics.
+CPU time, should vary little when analyzing query time statistics (might be larger than elapsed time when query is run in parallel). 
+
+#### Page read statistics
+can also look at the performance with respect to memory usage. SQL server works with pages cached in memory. 
+
+SET STATISTICS IO ON
+
+Logical reads. 
+
+#### Indexes
+
+\begin{itemize}
+\item Structure to improve speed of accessing data from a table.
+\item Used to locate data quickly without having to scan the entire table.
+
+\item Useful for improving performance with filter conditions.
+\end{itemize}
+
+Clustered index: dictionary. table data pages are ordered by the column with the index. speeds up search operations. B-tree structure. 
+
+Nonclustered index: improves insers and update operations. 
+
+
+SELECT *
+FROM Cities
+WHERE CountryCode IN ('JM','NZ') -- Country codes
+
+
+#### Execution plans
+Optimization phase, processor usage, memory usage, data page reads
+
+Index example, search from table with or without clustered index. 
+
+#### final notes
+
+
+
+
+
+
+<!-- ## R Markdown -->
+
+<!-- This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>. -->
+
+<!-- When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this: -->
+
+<!-- ```{r cars} -->
+<!-- summary(cars) -->
+<!-- ``` -->
+
+<!-- ## Including Plots -->
+
+<!-- You can also embed plots, for example: -->
+
+<!-- ```{r pressure, echo=FALSE} -->
+<!-- plot(pressure) -->
+<!-- ``` -->
+
+<!-- Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot. -->
